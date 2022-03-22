@@ -16,8 +16,8 @@
 FROM amazon/aws-cli:latest
 LABEL name="ddns-synology-to-aws-lightsail"
 LABEL maintainer="dev@gomgom.net"
-LABEL version="1.0"
-LABEL build_date="2022-03-20"
+LABEL version="1.1"
+LABEL build_date="2022-03-22"
 
 # Please write your Amazon IAM account Access key and Secret Accees key.
 # You needs AWS Lightsail IAM privileges below:
@@ -34,10 +34,10 @@ ENV UPDATE_TIME=write_in_seconds
 
 RUN yum install -y jq \
   && mkdir /root/.aws \
-  && echo -e "[default]\nregion=us-east-1" > /root/.aws/config \
-  && echo "[default]" > /root/.aws/credentials
+  && echo -e "[default]\nregion=us-east-1" > /root/.aws/config
 
-ENTRYPOINT echo "aws_access_key_id=$ACCESS_KEY_ID" >> /root/.aws/credentials; \
+ENTRYPOINT echo "[default]" > /root/.aws/credentials; \
+  echo "aws_access_key_id=$ACCESS_KEY_ID" >> /root/.aws/credentials; \
   echo "aws_secret_access_key=$SECRET_ACCESS_KEY" >> /root/.aws/credentials; \
   while [ true ]; \
   aws lightsail get-domain --domain-name=$DOMAIN_NAME | jq -r '.domain.domainEntries[] | select(.name == env.RECORD_NAME) | .id' > /root/RECORD_ID; \
